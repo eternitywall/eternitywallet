@@ -2,6 +2,7 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_TFTLCD.h> // Hardware-specific library
 #include <TouchScreen.h>
+#include <bignum256.h>
 
 #if defined(__SAM3X8E__)
     #undef __FlashStringHelper::F(string_literal)
@@ -188,12 +189,38 @@ void setup(void) {
 
   tft.begin(identifier);
   tft.setRotation(0);
+
 }
 
-
+int cont = 0;
 
 void loop(){
-  /*int n_side = 0;
+  // perform math operations on integers larget than  32 bytes
+
+  cont = cont + 1;
+
+  Serial.print("Loop number: ");
+  Serial.println(cont);
+
+  // int32_t n =  0x01FF;
+  // Serial.print("display n: ");
+  // Serial.println(n);
+
+  struct {
+    int overflow = 0; // 1 if overflow, 0 if not overflow
+    uint32_t d[8] = {0x10,0x1,0xF,0xA,0xB,0x0,0x0,0x0};
+  } privkey;
+
+  Serial.print("display privkey: ");
+  for(int i=0; i<8; i++){
+    Serial.print(privkey.d[i], HEX);
+  }
+  Serial.println();
+
+  delay(1000);
+  
+  // skip inserting the number in the serial
+  /* int n_side = 0;
   String readString;
   Serial.println("How many sides (2-256)?");
   while(n_side == 0){
@@ -213,6 +240,7 @@ void loop(){
   }
   // number of rolls with selected dice
   int n_rolls = ceil(256*log(2)/log(n_side));
+  Serial.println("Number of rolls:");
   Serial.println(n_rolls);
 
   uint8_t rolls[n_rolls];
@@ -224,20 +252,23 @@ void loop(){
   } privkey;
 
   uint8_t r[32];
-  bigSetZero(r);
+  //bigSetZero(r);
 
   uint8_t a[32]  = {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xFF};
 
-  bigAdd(r, a, (uint8_t *)privkey.d);
-  Serial.println("bigadd");
+  //bigAdd(r, a, (uint8_t *)privkey.d);
+  Serial.println("display r:");
   for(int i=0; i<32; i++){
     Serial.print(r[i], HEX);
   }
   Serial.println();
 
+  Serial.println("display privkey.d:");
   for(int i=0; i<8; i++){
     Serial.print(privkey.d[i], HEX);
   }
+
+  Serial.println("Start rolling:");
   int roll=0;
   for(int i=0; i<n_rolls; i++){
     do{
@@ -247,22 +278,24 @@ void loop(){
         readString += c; //makes the String readString
         delay(2);  //slow looping to allow buffer to fill with next character
       }
-      if (readString.length() >0) {
+      if (readString.length() > 0) {
         Serial.println(readString);  //so you can see the captured String
         roll = readString.toInt();  //convert readString into a number
         readString="";
       }
     } while(roll < 1 || roll > n_side);
     Serial.print(i);
-    Serial.print(" +++ ");
+    Serial.print("-th rolls +++ result:");
     Serial.println(roll);
     rolls[i] = roll - 1;
   }
+
+  Serial.println("Results series:");
   for(int i=0; i<n_rolls; i++){
     Serial.println(rolls[i], HEX);
-  }
+  }*/
 
-  */
+  /*
   switch(state){
     case 0:
       tft.fillScreen(BLUE);
@@ -331,5 +364,5 @@ void loop(){
       state = 0;
       break;
   }
-
+*/
 }
